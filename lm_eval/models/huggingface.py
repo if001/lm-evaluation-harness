@@ -165,7 +165,7 @@ class HuggingFaceAutoLM(BaseLM):
             trust_remote_code=trust_remote_code,
             revision=revision + ("/" + subfolder if subfolder is not None else ""),
         )
-        print('trust ', trust_remote_code)
+        
         self._add_special_tokens = add_special_tokens
         self.tokenizer = self._create_auto_tokenizer(
             pretrained=pretrained,
@@ -279,6 +279,7 @@ class HuggingFaceAutoLM(BaseLM):
         tokenizer = self.AUTO_TOKENIZER_CLASS.from_pretrained(
             pretrained if tokenizer is None else tokenizer,
             revision=revision + ("/" + subfolder if subfolder is not None else ""),
+            trust_remote_code=True
         )
         tokenizer.pad_token = tokenizer.eos_token
         return tokenizer
