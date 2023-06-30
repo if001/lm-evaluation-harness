@@ -52,6 +52,15 @@ from . import gsm8k
 from . import storycloze
 from . import toxigen
 from . import crowspairs
+from .ja import jsquad
+from .ja import jaquad
+from .ja import jcommonsenseqa
+from .ja import jnli
+from .ja import marc_ja
+from .ja import jblimp
+from .ja import xwinograd
+from .ja import xlsum_ja
+from .ja import jaqket_v2
 
 ########################################
 # Translation tasks
@@ -310,6 +319,23 @@ TASK_REGISTRY = {
     # "storycloze_2016": storycloze.StoryCloze2016,
     # "storycloze_2018": storycloze.StoryCloze2018,
     # "sat": sat.SATAnalogies,
+    # JGLUE
+    "jsquad": jsquad.JSQuAD,
+    **jsquad.construct_tasks(),
+    "jaquad": jaquad.JaQuAD,
+    **jaquad.construct_tasks(),
+    "jcommonsenseqa": jcommonsenseqa.JCommonsenseQA,
+    **jcommonsenseqa.construct_tasks(),
+    "jnli": jnli.JNLIWithFintanPrompt,
+    **jnli.construct_tasks(),
+    "marc_ja": marc_ja.MARCJaWithFintanPrompt,
+    **marc_ja.construct_tasks(),
+    "jblimp": jblimp.JBlimp,
+    "xwinograd_ja": xwinograd.XWinogradJA,
+    "xlsum_ja": xlsum_ja.XLSumJa,
+    **xlsum_ja.construct_tasks(),
+    "jaqket_v2": jaqket_v2.JAQKETV2,
+    **jaqket_v2.construct_tasks() 
 }
 
 

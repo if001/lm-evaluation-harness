@@ -23,6 +23,7 @@ def simple_evaluate(
     description_dict=None,
     check_integrity=False,
     decontamination_ngrams_path=None,
+    verbose=False,
 ):
 
     """Instantiate and evaluate a model on a list of tasks.
@@ -34,7 +35,7 @@ def simple_evaluate(
         Ignored if `model` argument is a LM object.
     :param tasks: list[Union[str, Task]]
         List of task names or Task objects. Task objects will be taken to have name task.EVAL_HARNESS_NAME if defined and type(task).__name__ otherwise.
-    :param num_fewshot: int
+    :param num_fewshot: int or list of int
         Number of examples in few-shot context
     :param batch_size: int, optional
         Batch size for model
@@ -42,7 +43,7 @@ def simple_evaluate(
         PyTorch device (e.g. "cpu" or "cuda:0") for running models
     :param no_cache: bool
         Whether or not to cache
-    :param limit: int, optional
+    :param limit: int or list of int, optional
         Limit the number of examples per task (only use this for testing)
     :param bootstrap_iters:
         Number of iterations for bootstrap statistics
@@ -91,6 +92,7 @@ def simple_evaluate(
         bootstrap_iters=bootstrap_iters,
         description_dict=description_dict,
         decontamination_ngrams_path=decontamination_ngrams_path,
+        verbose=verbose,
     )
 
     # add info about the model and few shot config
@@ -122,6 +124,7 @@ def evaluate(
     bootstrap_iters=100000,
     description_dict=None,
     decontamination_ngrams_path=None,
+    verbose=False,
 ):
     """Instantiate and evaluate a model on a list of tasks.
 
@@ -131,9 +134,9 @@ def evaluate(
         Dictionary of tasks. Tasks will be taken to have name task.EVAL_HARNESS_NAME if defined and type(task).__name__ otherwise.
     :param provide_description: bool
         Not implemented, and this option is deprecated and will be removed in a future version in favor of a different description providing method
-    :param num_fewshot: int
+    :param num_fewshot: int or list of int 
         Number of examples in few-shot context
-    :param limit: int, optional
+    :param limit: int or list of int, optional
         Limit the number of examples per task (only use this for testing)
     :param bootstrap_iters:
         Number of iterations for bootstrap statistics
@@ -151,7 +154,17 @@ def evaluate(
         print(
             "WARNING: provide_description is deprecated and will be removed in a future version in favor of description_dict"
         )
-
+    if isinstance(num_fewshot, list):
+        assert len(task_dict) == len(num_fewshot), f"The number of tasks ({len(task_dict)}) must be same as the number of elements in `num_fewshot` ({len(num_fewshot)})"
+    else:
+        # num_fewshot is int
+        num_fewshot = [num_fewshot] * len(task_dict)
+    if isinstance(limit, list):
+        assert len(task_dict) == len(limit), f"The number of tasks ({len(task_dict)}) must be same as the number of elements in `num_fewshot` ({len(limit)})"
+    else:
+        # limit is int or None
+        limit = [limit] * len(task_dict)
+    
     decontaminate = decontamination_ngrams_path is not None
 
     task_dict_items = [
@@ -179,7 +192,7 @@ def evaluate(
     docs_for_decontamination = collections.defaultdict(list)
 
     # get lists of each type of request
-    for task_name, task in task_dict_items:
+    for idx, (task_name, task) in enumerate(task_dict_items):
         versions[task_name] = task.VERSION
         # default to test doc, fall back to val doc if validation unavailable
         # TODO: the test-fallback-to-val system isn't final, we should revisit it at some point
@@ -203,8 +216,21 @@ def evaluate(
             if description_dict and task_name in description_dict
             else ""
         )
-
-        for doc_id, doc in enumerate(itertools.islice(task_docs, 0, limit)):
+        # set tokenizer inside task 
+        if task.LOAD_TOKENIZER:
+            if isinstance(lm, lm_eval.base.CachingLM):
+                task.set_tokenizer(lm.lm.tokenizer)
+            else:
+                task.set_tokenizer(lm.tokenizer)
+        # set max_length to task object
+        task.max_length = lm.lm.max_length if isinstance(lm, lm_eval.base.CachingLM) else lm.max_length
+        task.max_gen_toks = lm.lm.max_gen_toks if isinstance(lm, lm_eval.base.CachingLM) else lm.max_gen_toks
+        
+        limit_local = limit[idx]
+        if isinstance(limit_local, float):
+            limit_local = int(limit_local * len(task_docs))
+            print(f"Use {limit_local}/{len(task_docs)} samples corresponding to the ratio of {limit[idx]}")
+        for doc_id, doc in enumerate(itertools.islice(task_docs, 0, limit_local)):
 
             if decontaminate and task.should_decontaminate():
                 docs_for_decontamination[(task_name, task_set)].append(
@@ -213,7 +239,7 @@ def evaluate(
 
             docs[(task_name, doc_id)] = doc
             ctx = task.fewshot_context(
-                doc=doc, num_fewshot=num_fewshot, rnd=rnd, description=description
+                doc=doc, num_fewshot=num_fewshot[idx], rnd=rnd, description=description
             )
             reqs = task.construct_requests(doc, ctx)
             if not isinstance(reqs, (list, tuple)):
@@ -253,6 +279,8 @@ def evaluate(
             process_res_queue[(task_name, doc_id)].append((i, resp))
 
     vals = collections.defaultdict(list)
+    # holds detailed responses for error analysis
+    details = collections.defaultdict(list)
 
     # unpack results and sort back in order and return control to Task
     for (task_name, doc_id), requests in process_res_queue.items():
@@ -263,6 +291,9 @@ def evaluate(
         doc = docs[(task_name, doc_id)]
 
         metrics = task.process_results(doc, requests)
+        if "details" in metrics:
+            details[task_name].append(metrics["details"])
+            del metrics["details"]
         for metric, value in metrics.items():
             vals[(task_name, metric)].append(value)
 
@@ -294,6 +325,9 @@ def evaluate(
         if stderr is not None:
             results[task_name][metric + "_stderr"] = stderr(items)
 
+        if verbose and task_name in details:
+            results[task_name]["details"] = details[task_name]
+
     return {"results": dict(results), "versions": dict(versions)}
 
 
@@ -311,6 +345,9 @@ def make_table(result_dict):
     for k, dic in result_dict["results"].items():
         version = result_dict["versions"][k]
         for m, v in dic.items():
+            if m == "details":
+                continue
+
             if m.endswith("_stderr"):
                 continue
 

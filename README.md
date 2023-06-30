@@ -1,3 +1,68 @@
+
+# JP Language Model Evaluation Harness
+
+## Leaderboard
+
+| Model  | Average | [JCommonsenseQA](#jcommonsenseqa) (acc) | [JNLI](#jnli) (acc) | [MARC-ja](#marc-ja) (acc) | [JSQuAD](#jsquad) (exact_match) | eval script | Notes|
+| :--: | --: | --: | --: | --: | --: | :-- | :-- |
+| [rinna-japanese-gpt-neox-3.6b-instruction-ppo](https://huggingface.co/rinna/japanese-gpt-neox-3.6b-instruction-ppo) | 59.63 | 41.38 | 54.03 | 89.71 | 53.42 | [models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-ppo](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-ppo) |- Use v0.4 prompt template |
+| [rinna-japanese-gpt-neox-3.6b-instruction-sft-v2](https://huggingface.co/rinna/japanese-gpt-neox-3.6b-instruction-sft-v2) | 56.65 | 38.43 | 53.37 | 89.48 | 45.32 | [models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-sft-v2](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-sft-v2) |- Use v0.4 prompt template|
+| [rinna-japanese-gpt-neox-3.6b-instruction-sft](https://huggingface.co/rinna/japanese-gpt-neox-3.6b-instruction-sft) | 53.77 | 36.55 | 42.19 | 89.02 | 47.32 | [models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-sft](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-sft) |- Use v0.4 prompt template |
+| [cyberagent-open-calm-3b](https://huggingface.co/cyberagent/open-calm-3b) | 49 | 27.79 | 40.35 | 86.21 | 41.65 | [models/cyberagent/cyberagent-open-calm-3b](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/cyberagent/cyberagent-open-calm-3b) | |
+| [rinna-japanese-gpt-neox-3.6b](https://huggingface.co/rinna/japanese-gpt-neox-3.6b) | 47.79 | 31.64 | 34.43 | 74.82 | 50.29 | [models/rinna/rinna-japanese-gpt-neox-3.6b](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-japanese-gpt-neox-3.6b) | |
+| [rinna-japanese-gpt-1b](https://huggingface.co/rinna/japanese-gpt-1b) | 47.09 | 34.76 | 37.67 | 87.86 | 28.07 | [models/rinna/rinna-japanese-gpt-1b](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-japanese-gpt-1b) | |
+| [cyberagent-open-calm-7b](https://huggingface.co/cyberagent/open-calm-7b) | 46.04 | 24.22 | 37.63 | 74.12 | 48.18 | [models/cyberagent/cyberagent-open-calm-7b](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/cyberagent/cyberagent-open-calm-7b) | |
+| [cyberagent-open-calm-1b](https://huggingface.co/cyberagent/open-calm-1b) | 43.88 | 26.9 | 33.57 | 77.92 | 37.12 | [models/cyberagent/cyberagent-open-calm-1b](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/cyberagent/cyberagent-open-calm-1b) | |
+| [abeja-gpt-neox-japanese-2.7b](https://huggingface.co/abeja/gpt-neox-japanese-2.7b) | 37.1 | 20.02 | 39.73 | 74.99 | 13.67 | [models/abeja-gpt-neox-japanese-2.7b](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/abeja-gpt-neox-japanese-2.7b) | |
+
+
+
+## How to evaluate your model
+
+1. git clone https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable
+    ```bash
+    git clone -b jp-stable https://github.com/Stability-AI/lm-evaluation-harness.git
+    cd lm-evaluation-harness
+    pip install -e ".[ja]"
+    ```
+2. Choose your prompt template based on [docs/prompt_templates.md]((https://github.com/Stability-AI/lm-evaluation-harness/blob/jp-stable/docs/prompt_templates.md))
+3. Replace `TEMPLATE` to the version and change `MODEL_PATH` . And, save the script as `harness.sh`
+
+    ```bash
+    MODEL_ARGS="pretrained=MODEL_PATH"
+    TASK="jsquad-1.1-TEMPLATE,jcommonsenseqa-1.1-TEMPLATE,jnli-1.1-TEMPLATE,marc_ja-1.1-TEMPLATE"
+    python main.py \
+        --model hf-causal \
+        --model_args $MODEL_ARGS \
+        --tasks $TASK \
+        --num_fewshot "2,3,3,3" \
+        --device "cuda" \
+        --output_path "result.json"
+    ```
+
+4. Run! 
+   ```bash
+   sh harness.sh
+   ```
+
+We evaluated some open-sourced Japanese LMs. Pleasae refer to `harness.sh` inside `models` folder. 
+
+
+## JP Tasks
+For more details, please see [docs/jptasks.md](https://github.com/Stability-AI/lm-evaluation-harness/blob/jp-stable/docs/jptasks.md).
+
+| Tasks | [Supported Prompt Templates](https://github.com/Stability-AI/lm-evaluation-harness/blob/jp-stable/docs/prompt_templates.md) |
+| :- | -: | 
+| JSQuAD | 0.1 / 0.2 / 0.3 / 0.4 |
+| JCommonsenseQA |  0.1 / 0.2 / 0.3 / 0.4 |
+| JNLI | 0.2 / 0.3 / 0.4 |
+| MARC-ja | 0.2 / 0.3 / 0.4 |
+| JaQuAD | 0.1 / 0.2 / 0.3 / 0.4 |
+| JBLiMP | - |
+| XLSum-ja | 0.0 / 0.3 / 0.4 |
+| JAQKET | 0.1 / 0.2 / 0.3 / 0.4 |
+
+-----------------
 # Language Model Evaluation Harness
 
 ![](https://github.com/EleutherAI/lm-evaluation-harness/workflows/Build/badge.svg)
@@ -11,7 +76,7 @@ Features:
 
 - 200+ tasks implemented. See the [task-table](./docs/task_table.md) for a complete list.
 - Support for the Hugging Face `transformers` library, GPT-NeoX, Megatron-DeepSpeed, and the OpenAI API, with flexible tokenization-agnostic interface.
-- Support for evaluation on adapters (e.g. LoRa) supported in [HuggingFace's PEFT library](https://github.com/huggingface/peft).
+- Support for evaluation on adapters (e.g. LoRa) supported in [Hugging Face's PEFT library](https://github.com/huggingface/peft).
 - Task versioning to ensure reproducibility.
 
 ## Install
@@ -34,7 +99,7 @@ pip install -e ".[multilingual]"
 
 > **Note**: When reporting results from eval harness, please include the task versions (shown in `results["versions"]`) for reproducibility. This allows bug fixes to tasks while also ensuring that previously reported scores are reproducible. See the [Task Versioning](#task-versioning) section for more info.
 
-To evaluate a model hosted on the [HuggingFace Hub](https://huggingface.co/models) (e.g. GPT-J-6B) on tasks with names matching the pattern `lambada_*` and `hellaswag` you can use the following command:
+To evaluate a model hosted on the [Hugging Face Hub](https://huggingface.co/models) (e.g. GPT-J-6B) on tasks with names matching the pattern `lambada_*` and `hellaswag` you can use the following command:
 
 
 ```bash
@@ -55,7 +120,7 @@ python main.py \
     --device cuda:0
 ```
 
-To evaluate models that are loaded via `AutoSeq2SeqLM` in Huggingface, you instead use `hf-seq2seq`. *To evaluate (causal) models across multiple GPUs, use `--model hf-causal-experimental`*
+To evaluate models that are loaded via `AutoSeq2SeqLM` in Hugging Face, you instead use `hf-seq2seq`. *To evaluate (causal) models across multiple GPUs, use `--model hf-causal-experimental`*
 
 > **Warning**: Choosing the wrong model may result in erroneous outputs despite not erroring.
 
