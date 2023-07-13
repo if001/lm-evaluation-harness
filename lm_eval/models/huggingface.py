@@ -254,6 +254,7 @@ class HuggingFaceAutoLM(BaseLM):
         trust_remote_code: Optional[bool] = False,
         torch_dtype: Optional[Union[str, torch.dtype]] = None,
     ):
+        print('load peft', peft)
         model = self.AUTO_PEFT_CLASS.from_pretrained(
             model,
             peft,
