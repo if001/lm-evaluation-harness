@@ -243,7 +243,39 @@ class JSQuADWithRinnaInstructionSFT(JSQuAD):
         # input_text = f"質問：{doc['question']}<NL>文脈：{doc['context'].split('[SEP]')[-1].strip()}"
         return f"<NL>ユーザー: {input_text}<NL>システム: "
 
+class JSQuADWithConversationsPrompt(JSQuAD):
+    """
+    This prompt format was inspired by the below data in fujiki/japanese_alpaca_data. 
+    ```
+    {
+        'instruction': '与えられた文脈に最も適した文を選択してください。', 
+        'input': '文脈：あなたは親友と現在の仕事の状況について話しています。\nA）私にはあまり選択肢がありません。\nB）他に選択肢がありません。\nC）私には本当に決断する必要がありません。', 
+        'output': 'A) 私には多くの選択肢がありません。'
+    }
+    ```
+    Reference:
+    - data: https://huggingface.co/datasets/fujiki/japanese_alpaca_data
+    - code: https://github.com/Stability-AI/gpt-neox/blob/c130a4edc1120dccec8f02a34eb60d3e8f484cd3/finetune/finetune_base_ja.py#LL118C23-L127C11
+    """
+    PROMPT_VERSION = 0.5
+    DESCRIPTION = "以下はユーザーとアシスタントとの会話です。アシスタントは親切で丁寧に詳細を回答します。\n\n"
+    INSTRUCTION = "与えられた選択肢の中から、最適な答えを選んでください。\n\n"        
+    def doc_to_text(self, doc):
+        """
+        以下は、タスクを説明する指示と、文脈のある入力の組み合わせです。要求を適切に満たす応答を書きなさい。
 
+        ### 指示: 
+        {instruction}
+
+        ### 入力: 
+        {input}
+
+        ### 応答: 
+        {response}
+        """
+        input_text = f"文脈：{doc['context'].split('[SEP]')[-1].strip()}\n質問：{doc['question']}"
+        return f"### ユーザー:\n{self.INSTRUCTION}\n\n\n{input_text}\n\n### アシスタント:\n"
+    
 VERSIONS = [
     JSQuAD,
     JSQuADWithFintanPrompt,
