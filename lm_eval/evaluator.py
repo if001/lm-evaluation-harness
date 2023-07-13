@@ -80,7 +80,7 @@ def simple_evaluate(
         )
 
     task_dict = lm_eval.tasks.get_task_dict(tasks)
-
+    print('load task', task_dict)
     if check_integrity:
         run_task_tests(task_list=tasks)
 
