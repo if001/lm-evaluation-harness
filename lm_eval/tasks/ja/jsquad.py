@@ -281,6 +281,7 @@ VERSIONS = [
     JSQuADWithFintanPrompt,
     JSQuADWithJAAlpacaPrompt,
     JSQuADWithRinnaInstructionSFT,
+    JSQuADWithConversationsPrompt
 ]
 
 
