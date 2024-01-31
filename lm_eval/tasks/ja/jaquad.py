@@ -11,10 +11,12 @@ Contexts are collected from Japanese Wikipedia articles.
 Homepage: https://github.com/SkelterLabsInc/JaQuAD
 """
 from .jsquad import (
-    JSQuAD, 
+    JSQuAD,
     JSQuADWithFintanPrompt,
     JSQuADWithJAAlpacaPrompt,
     JSQuADWithRinnaInstructionSFT,
+    JSQuADWithRinnaBilingualInstructionSFT,
+    JSQuADWithLlama2,
 )
 
 
@@ -34,13 +36,13 @@ class JaQuAD(JSQuAD):
     DATASET_PATH = "SkelterLabsInc/JaQuAD"
     DATASET_NAME = None
     VERSION = 0.1
-    
+
     def training_docs(self):
         return self.dataset["train"]
 
     def validation_docs(self):
         return self.dataset["validation"]
-    
+
     def process_results(self, doc, results):
         """Take a single document and the LM results and evaluates, returning a
         dict where keys are the names of submetrics and values are the values of
@@ -68,16 +70,30 @@ class JaQuADWithRinnaInstructionSFT(JSQuADWithRinnaInstructionSFT, JaQuAD):
     PROMPT_VERSION = 0.4
 
 
+class JaQuADWithRinnaBilingualInstructionSFT(
+    JSQuADWithRinnaBilingualInstructionSFT, JaQuAD
+):
+    PROMPT_VERSION = 0.5
+
+
+class JaQuADWithLlama2(JSQuADWithLlama2, JaQuAD):
+    PROMPT_VERSION = 0.6
+
+
 VERSIONS = [
     JaQuAD,
     JaQuADWithFintanPrompt,
     JaQuADWithJAAlpacaPrompt,
     JaQuADWithRinnaInstructionSFT,
+    JaQuADWithRinnaBilingualInstructionSFT,
+    JaQuADWithLlama2,
 ]
 
 
 def construct_tasks():
     tasks = {}
     for version_class in VERSIONS:
-        tasks[f"jaquad-{version_class.VERSION}-{version_class.PROMPT_VERSION}"] = version_class
+        tasks[
+            f"jaquad-{version_class.VERSION}-{version_class.PROMPT_VERSION}"
+        ] = version_class
     return tasks

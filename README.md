@@ -2,21 +2,25 @@
 # JP Language Model Evaluation Harness
 
 ## Leaderboard
-
-| Model  | Average | [JCommonsenseQA](#jcommonsenseqa) (acc) | [JNLI](#jnli) (acc) | [MARC-ja](#marc-ja) (acc) | [JSQuAD](#jsquad) (exact_match) | eval script | Notes|
-| :--: | --: | --: | --: | --: | --: | :-- | :-- |
-| [rinna-japanese-gpt-neox-3.6b-instruction-ppo](https://huggingface.co/rinna/japanese-gpt-neox-3.6b-instruction-ppo) | 59.63 | 41.38 | 54.03 | 89.71 | 53.42 | [models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-ppo](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-ppo) |- Use v0.4 prompt template |
-| [rinna-japanese-gpt-neox-3.6b-instruction-sft-v2](https://huggingface.co/rinna/japanese-gpt-neox-3.6b-instruction-sft-v2) | 56.65 | 38.43 | 53.37 | 89.48 | 45.32 | [models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-sft-v2](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-sft-v2) |- Use v0.4 prompt template|
-| [rinna-japanese-gpt-neox-3.6b-instruction-sft](https://huggingface.co/rinna/japanese-gpt-neox-3.6b-instruction-sft) | 53.77 | 36.55 | 42.19 | 89.02 | 47.32 | [models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-sft](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-sft) |- Use v0.4 prompt template |
-| [cyberagent-open-calm-3b](https://huggingface.co/cyberagent/open-calm-3b) | 49 | 27.79 | 40.35 | 86.21 | 41.65 | [models/cyberagent/cyberagent-open-calm-3b](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/cyberagent/cyberagent-open-calm-3b) | |
-| [rinna-japanese-gpt-neox-3.6b](https://huggingface.co/rinna/japanese-gpt-neox-3.6b) | 47.79 | 31.64 | 34.43 | 74.82 | 50.29 | [models/rinna/rinna-japanese-gpt-neox-3.6b](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-japanese-gpt-neox-3.6b) | |
-| [rinna-japanese-gpt-1b](https://huggingface.co/rinna/japanese-gpt-1b) | 47.09 | 34.76 | 37.67 | 87.86 | 28.07 | [models/rinna/rinna-japanese-gpt-1b](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-japanese-gpt-1b) | |
-| [cyberagent-open-calm-7b](https://huggingface.co/cyberagent/open-calm-7b) | 46.04 | 24.22 | 37.63 | 74.12 | 48.18 | [models/cyberagent/cyberagent-open-calm-7b](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/cyberagent/cyberagent-open-calm-7b) | |
-| [cyberagent-open-calm-1b](https://huggingface.co/cyberagent/open-calm-1b) | 43.88 | 26.9 | 33.57 | 77.92 | 37.12 | [models/cyberagent/cyberagent-open-calm-1b](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/cyberagent/cyberagent-open-calm-1b) | |
-| [abeja-gpt-neox-japanese-2.7b](https://huggingface.co/abeja/gpt-neox-japanese-2.7b) | 37.1 | 20.02 | 39.73 | 74.99 | 13.67 | [models/abeja-gpt-neox-japanese-2.7b](https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/abeja-gpt-neox-japanese-2.7b) | |
-
-
-
+| model                                                                                                                                                                                                                                                 |   average |   jcommonsenseqa |   jnli |   marc_ja |   jsquad |   jaqket_v2 |   xlsum_ja |   xwinograd_ja |   mgsm | eval script                                                                                                                                                                                                                                                                                                                                                     |
+|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------:|-----------------:|-------:|----------:|---------:|------------:|-----------:|---------------:|-------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <a target="_blank" href="https://huggingface.co/stabilityai/japanese-stablelm-instruct-alpha-7b" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">stabilityai-japanese-stablelm-instruct-alpha-7b</a> |     54.71 |            82.22 |  52.05 |     82.88 |    63.26 |       74.83 |       7.79 |          72.68 |    2   | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/stabilityai/stabilityai-japanese-stablelm-instruct-alpha-7b/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/stabilityai/stabilityai-japanese-stablelm-instruct-alpha-7b/harness.sh</a> |
+| <a target="_blank" href="https://huggingface.co/stabilityai/japanese-stablelm-base-alpha-7b" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">stabilityai-japanese-stablelm-base-alpha-7b</a>         |     51.06 |            33.42 |  43.34 |     96.73 |    70.62 |       78.09 |      10.65 |          72.78 |    2.8 | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/stabilityai/stabilityai-japanese-stablelm-base-alpha-7b/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/stabilityai/stabilityai-japanese-stablelm-base-alpha-7b/harness.sh</a>         |
+| <a target="_blank" href="https://huggingface.co/rinna/bilingual-gpt-neox-4b-instruction-sft" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">rinna-bilingual-gpt-neox-4b-instruction-sft</a>         |     47.75 |            49.51 |  47.08 |     95.28 |    55.99 |       61.17 |       5.51 |          64.65 |    2.8 | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-bilingual-gpt-neox-4b-instruction-sft/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/rinna/rinna-bilingual-gpt-neox-4b-instruction-sft/harness.sh</a>                     |
+| <a target="_blank" href="https://huggingface.co/rinna/bilingual-gpt-neox-4b-instruction-ppo" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">rinna-bilingual-gpt-neox-4b-instruction-ppo</a>         |     47.18 |            48.79 |  48.23 |     96.09 |    54.16 |       57.65 |       5.03 |          65.07 |    2.4 | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-bilingual-gpt-neox-4b-instruction-ppo/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/rinna/rinna-bilingual-gpt-neox-4b-instruction-ppo/harness.sh</a>                     |
+| <a target="_blank" href="https://huggingface.co/llama2/13b-chat" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">llama2-13b-chat</a>                                                                 |     47.02 |            72.56 |  35.62 |     59.92 |    67.69 |       48.2  |      15.14 |          63.82 |   13.2 | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/llama2/llama2-13b-chat/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/llama2/llama2-13b-chat/harness.sh</a>                                                                           |
+| <a target="_blank" href="https://huggingface.co/llama2/13b" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">llama2-13b</a>                                                                           |     46.32 |            74.89 |  21.98 |     38.89 |    76.14 |       67.7  |      18.11 |          62.88 |   10   | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/llama2/llama2-13b/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/llama2/llama2-13b/harness.sh</a>                                                                                     |
+| <a target="_blank" href="https://huggingface.co/rinna/japanese-gpt-neox-3.6b-instruction-ppo" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">rinna-japanese-gpt-neox-3.6b-instruction-ppo</a>       |     46.32 |            44.06 |  54.19 |     89.61 |    51.62 |       50.95 |       6.63 |          69.13 |    4.4 | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-ppo/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-ppo/harness.sh</a>                   |
+| <a target="_blank" href="https://huggingface.co/rinna/japanese-gpt-neox-3.6b-instruction-sft-v2" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">rinna-japanese-gpt-neox-3.6b-instruction-sft-v2</a> |     45.23 |            40.57 |  53.45 |     89.88 |    44.91 |       52.84 |       6.14 |          71.22 |    2.8 | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-sft-v2/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-sft-v2/harness.sh</a>             |
+| <a target="_blank" href="https://huggingface.co/rinna/japanese-gpt-neox-3.6b-instruction-sft" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">rinna-japanese-gpt-neox-3.6b-instruction-sft</a>       |     43.82 |            38.07 |  44.58 |     90.62 |    47.41 |       53.69 |       4.74 |          69.45 |    2   | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-sft/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/rinna/rinna-japanese-gpt-neox-3.6b-instruction-sft/harness.sh</a>                   |
+| <a target="_blank" href="https://huggingface.co/llama2/7b" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">llama2-7b</a>                                                                             |     42.96 |            52.64 |  28.23 |     86.05 |    58.4  |       38.83 |       9.32 |          64.65 |    5.6 | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/llama2/llama2-7b/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/llama2/llama2-7b/harness.sh</a>                                                                                       |
+| <a target="_blank" href="https://huggingface.co/rinna/japanese-gpt-neox-3.6b" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">rinna-japanese-gpt-neox-3.6b</a>                                       |     41.79 |            31.64 |  34.43 |     74.82 |    47.91 |       68.38 |       5.16 |          70.8  |    1.2 | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-japanese-gpt-neox-3.6b/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/rinna/rinna-japanese-gpt-neox-3.6b/harness.sh</a>                                                   |
+| <a target="_blank" href="https://huggingface.co/llama2/7b-chat" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">llama2-7b-chat</a>                                                                   |     41.31 |            55.59 |  29.54 |     90.41 |    59.34 |       17.96 |       2.34 |          66.11 |    9.2 | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/llama2/llama2-7b-chat/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/llama2/llama2-7b-chat/harness.sh</a>                                                                             |
+| <a target="_blank" href="https://huggingface.co/rinna/bilingual-gpt-neox-4b" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">rinna-bilingual-gpt-neox-4b</a>                                         |     40.03 |            20.82 |  55.22 |     59.55 |    50.79 |       59.45 |       5.55 |          66.42 |    2.4 | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-bilingual-gpt-neox-4b/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/rinna/rinna-bilingual-gpt-neox-4b/harness.sh</a>                                                     |
+| <a target="_blank" href="https://huggingface.co/cyberagent/open-calm-7b" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">cyberagent-open-calm-7b</a>                                                 |     38.8  |            24.22 |  37.63 |     74.12 |    45.79 |       60.74 |       2.04 |          65.07 |    0.8 | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/cyberagent/cyberagent-open-calm-7b/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/cyberagent/cyberagent-open-calm-7b/harness.sh</a>                                                   |
+| <a target="_blank" href="https://huggingface.co/cyberagent/open-calm-3b" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">cyberagent-open-calm-3b</a>                                                 |     38.61 |            27.79 |  40.35 |     86.21 |    40.45 |       46.91 |       1.95 |          63.61 |    1.6 | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/cyberagent/cyberagent-open-calm-3b/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/cyberagent/cyberagent-open-calm-3b/harness.sh</a>                                                   |
+| <a target="_blank" href="https://huggingface.co/rinna/japanese-gpt-1b" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">rinna-japanese-gpt-1b</a>                                                     |     36.92 |            34.76 |  37.67 |     87.86 |    26.18 |       37.03 |       5.34 |          64.55 |    2   | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-japanese-gpt-1b/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/rinna/rinna-japanese-gpt-1b/harness.sh</a>                                                                 |
+| <a target="_blank" href="https://huggingface.co/rinna/japanese-gpt-neox-small" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">rinna-japanese-gpt-neox-small</a>                                                     |     31.12 |            34.22 |  30.11 |     83.35 |    5.80 |       31.78 |       3.85 |          57.24 |    1.6   | <a target="_blank" href="https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable/models/rinna/rinna-japanese-gpt-neox-small/harness.sh" style="color: var(--link-text-color); text-decoration: underline;text-decoration-style: dotted;">models/rinna/rinna-japanese-gpt-neox-small/harness.sh</a>                                                                 |
 ## How to evaluate your model
 
 1. git clone https://github.com/Stability-AI/lm-evaluation-harness/tree/jp-stable
@@ -40,19 +44,19 @@
         --output_path "result.json"
     ```
 
-4. Run! 
+4. Run!
    ```bash
    sh harness.sh
    ```
 
-We evaluated some open-sourced Japanese LMs. Pleasae refer to `harness.sh` inside `models` folder. 
+We evaluated some open-sourced Japanese LMs. Pleasae refer to `harness.sh` inside `models` folder.
 
 
 ## JP Tasks
 For more details, please see [docs/jptasks.md](https://github.com/Stability-AI/lm-evaluation-harness/blob/jp-stable/docs/jptasks.md).
 
 | Tasks | [Supported Prompt Templates](https://github.com/Stability-AI/lm-evaluation-harness/blob/jp-stable/docs/prompt_templates.md) |
-| :- | -: | 
+| :- | -: |
 | JSQuAD | 0.1 / 0.2 / 0.3 / 0.4 |
 | JCommonsenseQA |  0.1 / 0.2 / 0.3 / 0.4 |
 | JNLI | 0.2 / 0.3 / 0.4 |
@@ -75,7 +79,8 @@ This project provides a unified framework to test generative language models on 
 Features:
 
 - 200+ tasks implemented. See the [task-table](./docs/task_table.md) for a complete list.
-- Support for the Hugging Face `transformers` library, GPT-NeoX, Megatron-DeepSpeed, and the OpenAI API, with flexible tokenization-agnostic interface.
+- Support for models loaded via [transformers](https://github.com/huggingface/transformers/) (including quantization via [AutoGPTQ](https://github.com/PanQiWei/AutoGPTQ)), [GPT-NeoX](https://github.com/EleutherAI/gpt-neox), and [Megatron-DeepSpeed](https://github.com/microsoft/Megatron-DeepSpeed/), with a flexible tokenization-agnostic interface.
+
 - Support for evaluation on adapters (e.g. LoRa) supported in [Hugging Face's PEFT library](https://github.com/huggingface/peft).
 - Task versioning to ensure reproducibility.
 
@@ -95,6 +100,13 @@ To install additional multilingual tokenization and text segmentation packages, 
 pip install -e ".[multilingual]"
 ```
 
+To support loading GPTQ quantized models, install the package with the `auto-gptq` extra:
+
+```bash
+pip install gekko
+pip install -e ".[auto-gptq]"
+```
+
 ## Basic Usage
 
 > **Note**: When reporting results from eval harness, please include the task versions (shown in `results["versions"]`) for reproducibility. This allows bug fixes to tasks while also ensuring that previously reported scores are reproducible. See the [Task Versioning](#task-versioning) section for more info.
@@ -109,6 +121,8 @@ python main.py \
     --tasks lambada_*,hellaswag \
     --device cuda:0
 ```
+
+Also check the script for running [evalutation suites](#evaluation-suites).
 
 Additional arguments can be provided to the model constructor using the `--model_args` flag. Most notably, this supports the common practice of using the `revisions` feature on the Hub to store partially trained checkpoints:
 
@@ -168,6 +182,72 @@ python write_out.py \
 ```
 
 This will write out one text file for each task.
+
+## Evaluation Suites
+
+If you have multiple tasks that you routinely run as an evaluation suite, you can save the suite configuration in a single file and run it with different models. Save a suite config to `lm_eval/suites/configs/[suite].conf`, formatted like this:
+
+    [tasks.my_task]
+    version = 1.0
+    fewshot = 2
+
+    [tasks.other_task]
+    version = 1.1
+    fewshot = 3
+
+Then you can run the suite like this:
+
+    python scripts/run_suite.py [model_path] [suite_name] [prompt_version] -m [model_args]
+
+For prompt versions, see the [prompt docs](docs/prompt_templates.md) and the [list of prompt names](lm_eval/prompts.py).
+
+## Advanced Usage
+
+For models loaded with the HuggingFace  `transformers` library, any arguments provided via `--model_args` get passed to the relevant constructor directly. This means that anything you can do with `AutoModel` can be done with our library. For example, you can pass a local path via `pretrained=` or use models finetuned with [PEFT](https://github.com/huggingface/peft) by taking the call you would run to evaluate the base model and add `,peft=PATH` to the `model_args` argument:
+```bash
+python main.py \
+    --model hf-causal-experimental \
+    --model_args pretrained=EleutherAI/gpt-j-6b,peft=nomic-ai/gpt4all-j-lora \
+    --tasks openbookqa,arc_easy,winogrande,hellaswag,arc_challenge,piqa,boolq \
+    --device cuda:0
+```
+
+GPTQ quantized models can be loaded by specifying their file names in `,quantized=NAME` (or `,quantized=True` for default names) in the `model_args` argument:
+
+```bash
+python main.py \
+    --model hf-causal-experimental \
+    --model_args pretrained=model-name-or-path,quantized=model.safetensors,gptq_use_triton=True \
+    --tasks hellaswag
+```
+
+We support wildcards in task names, for example you can run all of the machine-translated lambada tasks via `--task lambada_openai_mt_*`.
+
+We currently only support one prompt per task, which we strive to make the "standard" as defined by the benchmark's authors. If you would like to study how varying prompts causes changes in the evaluation score, check out the [BigScience fork](https://github.com/bigscience-workshop/lm-evaluation-harness) of this repo. We are currently working on upstreaming this capability to `main`.
+
+## Cluster Usage
+
+The evaluation suite can be called via the Python API, which makes it possible to script jobs with [submitit](https://github.com/facebookincubator/submitit), for example. You can find a detailed example of how this works in `scripts/run_eval.py`.
+
+Running a job via submitit has two steps: preparing the **executor**, which controls cluster options, and preparing the actual **evaluation** options.
+
+First you need to configure the executor. This controls cluster job details, like how many GPUs or nodes to use. For a detailed example, see `build_executor` in `run_eval.py`, but a minimal example looks like this:
+
+    base_args = {... cluster args ...}
+    executor = submitit.AutoExecutor(folder="./logs")
+    executor.update_parameters(**base_args)
+
+Once the executor is prepared, you need to actually run the evaluation task. A detailed example of wrapping the API to make this easy is in the `eval_task` function, which mainly just calls out to `main` in `scripts/main_eval.py`. The basic structure is like this:
+
+    def my_task():
+        args = {... eval args ...}
+
+        # this is the function from main_eval.py
+        main_eval(args, output_path="./hoge.json")
+
+    job = executor.submit(my_task)
+
+You can then get output from the job and check that it completed successfully. See `run_job` for an example of how that works.
 
 ## Implementing new tasks
 

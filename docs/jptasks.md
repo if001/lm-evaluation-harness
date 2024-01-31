@@ -1,5 +1,5 @@
 
-# JP Tasks 
+# JP Tasks
 
 ## [JGLUE](https://github.com/yahoojapan/JGLUE)
 ### JSQuAD
@@ -30,7 +30,7 @@ python main.py \
 ```
 
 ### JNLI
-> JNLI is a Japanese version of the NLI (Natural Language Inference) dataset. NLI is a task to recognize the inference relation that a premise sentence has to a hypothesis sentence. The inference relations are `entailment`, `contradiction`, and `neutral`.
+> JNLI is a Japanese version of the NLI (Natural Language Inference) dataset. NLI is a task to recognize the inference relation that a premise sentence has to a hypothesis sentence. The inference relations are `含意`, `矛盾`, and `中立`.
 
 **sample script**
 ```
@@ -55,9 +55,22 @@ python main.py \
     --output_path "result.json"
 ```
 
+### JCoLA
+> JCoLA is a Japanese version of [CoLA](https://nyu-mll.github.io/CoLA/) (Warstadt+, 2019), which is a dataset for targeted syntactic evaluations of language models in Japanese, which consists of 10,020 sentences with acceptability judgments by linguists. The sentences are manually extracted from linguistics journals, handbooks and textbooks.
+
+**sample script**
+```
+python main.py \
+    --model hf-causal \
+    --model_args $MODEL_ARGS \
+    --tasks "jcola-0.0-0.1" \
+    --num_fewshot "3" \
+    --output_path "result.json"
+```
+
 ## [JaQuAD](https://huggingface.co/datasets/SkelterLabsInc/JaQuAD)
 
-> Japanese Question Answering Dataset (JaQuAD), released in 2022, is a human-annotated dataset created for Japanese Machine Reading Comprehension. JaQuAD is developed to provide a SQuAD-like QA dataset in Japanese. 
+> Japanese Question Answering Dataset (JaQuAD), released in 2022, is a human-annotated dataset created for Japanese Machine Reading Comprehension. JaQuAD is developed to provide a SQuAD-like QA dataset in Japanese.
 
 **sample script**
 ```
@@ -85,8 +98,23 @@ python main.py \
     --output_path "result.json"
 ```
 
+## [Wikilingua](https://github.com/esdurmus/Wikilingua)
+
+Wikilingua is a summarization task using documents constructed from Wikihow articles. While the original dataset is multilingual, for now it just the Japanese version has been added.
+
+**sample script**
+
+```
+python main.py \
+    --model hf-causal \
+    --model_args $MODEL_ARGS \
+    --tasks "wikilingua_ja" \
+    --num_fewshot "1" \
+    --output_path "result.json"
+```
+
 ## [XLSum-ja](https://huggingface.co/datasets/csebuetnlp/xlsum)
-This is a filtered Japanese subset of [XLSum](https://huggingface.co/datasets/csebuetnlp/xlsum) based on ROUGE-2, where [PaLM 2](https://arxiv.org/abs/2305.10403) uses. 
+This is a filtered Japanese subset of [XLSum](https://huggingface.co/datasets/csebuetnlp/xlsum) based on ROUGE-2, where [PaLM 2](https://arxiv.org/abs/2305.10403) uses.
 
 **main features**
 - Filtered data based on 15-gram overlap as PaLM 2 did.
@@ -131,9 +159,10 @@ python main.py \
     --output_path result.json
 ```
 
-## [JAQKET v2](https://www.nlp.ecei.tohoku.ac.jp/projects/jaqket/)
+## [JAQKET v2](https://sites.google.com/view/project-aio/dataset#h.gv38mvfvqk77)
 
->  JApanese Questions on Knowledge of EnTitie (JAQKET)Wikipediaの記事名を答えとした，日本語のオープンドメインQAデータセットです．
+Japanese Questions on Knowledge of Entity (JAQKET) is a Japanese open-domain QA dataset where the answers are Wikipedia article titles.
+In version 2 (v2), the dataset is designed to be more similar to a typical quiz competition by excluding answer choices and not providing the answer list used in v1.
 
 **sample script**
 
@@ -144,4 +173,46 @@ python main.py \
     --tasks "jaqket_v2" \
     --num_fewshot "1" \
     --output_path "result.json"
+```
+
+## [JAQKET v1](https://sites.google.com/view/project-aio/dataset#h.9lkgxzw759e3)
+
+Japanese Questions on Knowledge of Entity (JAQKET) is a Japanese open-domain QA dataset where the answers are Wikipedia article titles.
+In version 1 (v1), Each question is accompanied by 20 candidate answers, meaning that the setup involves solving a multiple-choice question with 20 options to choose from.
+
+**sample script**
+
+```
+python main.py \
+    --model hf-causal \
+    --model_args $MODEL_ARGS \
+    --tasks "jaqket_v1" \
+    --num_fewshot "1" \
+    --output_path "result.json"
+```
+
+## [MGSM](https://huggingface.co/datasets/juletxara/mgsm)
+
+[Multilingual Grade School Math](https://arxiv.org/pdf/2210.03057.pdf) is a set of 250 math word problems in Japanese, and the task is to get the right integer solution to the problem.
+The dataset includes step-by-step solutions of example problems which are included in the prompt to induce Chain-of-Thought reasoning.
+
+The task is rather hard, with gpt3/text-davinci-002 achieving 26% accuracy at 4-shot.
+Though this dataset was translated to Japanese by a human, some errors nonetheless occur including in the few-shot examples that are included in the prompt at every generation.
+
+The implementation here features an auto-reduction of the number of examples included in the prompt if the prompt becomes larger than the model's context length.
+
+Use mgsm-1.0-0.0 by default and mgsm-1.0-0.4 for the rinna instruction prompt.
+
+**sample scripts**
+
+Hugging Face models
+
+```
+python main.py \
+    --model hf-causal
+    --model_args $MODEL_ARGS
+    --tasks mgsm-1.0-0.4
+    --num_fewshot "4"
+    --device "cuda"
+    --output_path "result.mgsm.json"
 ```

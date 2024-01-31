@@ -12,7 +12,7 @@ import torch
 from omegaconf import OmegaConf
 
 import sacrebleu
-import rouge_score
+from rouge_score import rouge_scorer, scoring
 
 
 class ExitCodeError(Exception):
@@ -227,6 +227,7 @@ def run_task_tests(task_list: List[str]):
             f"Not all tests for the specified tasks ({task_list}) ran successfully! Error code: {pytest_return_val}"
         )
 
+
 def bleu(refs, preds):
     """
     Returns `t5` style BLEU scores. See the related implementation:
@@ -248,6 +249,7 @@ def bleu(refs, preds):
         use_effective_order=False,
     ).score
     return score
+
 
 def rouge(refs, preds):
     """
@@ -272,6 +274,28 @@ def rouge(refs, preds):
     for ref, pred in zip(refs, preds):
         ref = _prepare_summary(ref)
         pred = _prepare_summary(pred)
+        aggregator.add_scores(scorer.score(ref, pred))
+    result = aggregator.aggregate()
+    return {type: result[type].mid.fmeasure * 100 for type in rouge_types}
+
+
+def rouge2_mecab(refs, preds, tokenizer):
+    """This uses a MeCab tokenizer for Japanese text.
+
+    Besides specifying the tokenizer, this does not perform the rougeLsum
+    related sentence/newline normalization, and only calculates rouge2.
+    Otherwise it is the same as the generic rouge scoring.
+    """
+    rouge_types = ["rouge2"]
+    # mecab-based rouge
+    scorer = rouge_scorer.RougeScorer(
+        rouge_types,
+        tokenizer=tokenizer,
+    )
+
+    # Accumulate confidence intervals.
+    aggregator = scoring.BootstrapAggregator()
+    for ref, pred in zip(refs, preds):
         aggregator.add_scores(scorer.score(ref, pred))
     result = aggregator.aggregate()
     return {type: result[type].mid.fmeasure * 100 for type in rouge_types}

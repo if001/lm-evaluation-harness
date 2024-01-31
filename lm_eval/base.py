@@ -1,4 +1,5 @@
 import abc
+from collections import defaultdict
 from typing import Iterable
 import numpy as np
 import random
@@ -13,6 +14,7 @@ import torch
 import torch.nn.functional as F
 
 from lm_eval.metrics import mean, weighted_perplexity, weighted_mean, bits_per_byte
+from lm_eval.metrics import balanced_mean, matthews_corrcoef, macro_f1
 from lm_eval import utils
 from abc import abstractmethod
 
@@ -304,7 +306,6 @@ class BaseLM(LM):
             for (cache_key, _, _), logits, inp, inplen, cont_toks in zip(
                 chunk, multi_logits, inps, inplens, cont_toks_list
             ):
-
                 # Slice to original seq length
                 contlen = len(cont_toks)
                 logits = logits[inplen - contlen : inplen].unsqueeze(
@@ -358,7 +359,7 @@ class BaseLM(LM):
                 raise NotImplementedError
             if isinstance(until, str):
                 until = [until]
-            # (primary_until,) = self.tok_encode(until[0])   
+            # (primary_until,) = self.tok_encode(until[0])
             primary_until = self.tok_encode(until[0])
             if len(primary_until) == 0:
                 primary_until = self.tokenizer.eos_token_id
@@ -430,6 +431,8 @@ class Task(abc.ABC):
         self.download(data_dir, cache_dir, download_mode)
         self._training_docs = None
         self._fewshot_docs = None
+        self._target_to_docs = None
+        self._target_to_ratio = None
 
     def download(self, data_dir=None, cache_dir=None, download_mode=None):
         """Downloads and returns the task dataset.
@@ -515,11 +518,63 @@ class Task(abc.ABC):
         """
         return doc
 
-    def fewshot_examples(self, k, rnd):
+    def fewshot_examples(self, k, rnd, stratified=False):
+        """Returns few shot examples from training docs"""
         if self._training_docs is None:
             self._training_docs = list(self.training_docs())
 
-        return rnd.sample(self._training_docs, k)
+        if stratified:
+            return self._stratified_fewshot_examples(self._training_docs, k, rnd)
+        else:
+            return rnd.sample(self._training_docs, k)
+
+    def _stratified_fewshot_examples(self, docs, k, rnd):
+        """Returns few shot examples from `docs` with stratified sampling,
+        using the target from `self.doc_to_target` as the stratum.
+
+        WARNING: in order to speed up computation, this method caches the following
+        based on `docs`:
+        - `self._target_to_docs`, which stores a mapping from target to docs, and
+        - `self._target_to_ratio`, which stores a mapping from target to the ratio of docs
+        Thus, `docs` MUST be constant across different method calls.
+        This assumption should generally hold true, since for a given task `docs`
+        will typically be either one of:
+        - `self._training_docs` if the dataset for the task has training data, or
+        - `self._fewshot_docs` if the dataset for the task does not have any training data
+        """
+        if self._target_to_docs is None or self._target_to_ratio is None:
+            self._target_to_docs = defaultdict(list)
+            for doc in docs:
+                target = self.doc_to_target(doc)
+                self._target_to_docs[target].append(doc)
+
+            self._target_to_ratio = {
+                target: len(_docs) / len(docs)
+                for target, _docs in self._target_to_docs.items()
+            }
+
+        # `k` should generally be constant across different method calls
+        # (as the number of few-shot is typically fixed for a given task),
+        # but this may not be guaranteed, so calculate the number of sample
+        # for each target per method call
+        target_to_num_samples = {
+            target: int(ratio * k) for target, ratio in self._target_to_ratio.items()
+        }
+        # Handle any rounding discrepancies by adjusting the counts
+        remaining_samples = k - sum(target_to_num_samples.values())
+        if remaining_samples > 0:
+            for _ in range(remaining_samples):
+                # Increment the min value
+                target = min(target_to_num_samples, key=target_to_num_samples.get)
+                target_to_num_samples[target] += 1
+
+        samples = []
+        for target, num_samples in target_to_num_samples.items():
+            samples.extend(rnd.sample(self._target_to_docs[target], num_samples))
+        # Randomly shuffle the samples to prevent potential biases
+        # that may arise from a fixed ordering of the targets
+        rnd.shuffle(samples)
+        return samples
 
     def doc_to_decontamination_query(self, doc):
         print(
@@ -592,7 +647,13 @@ class Task(abc.ABC):
 
     @utils.positional_deprecated
     def fewshot_context(
-        self, doc, num_fewshot, provide_description=None, rnd=None, description=None
+        self,
+        doc,
+        num_fewshot,
+        provide_description=None,
+        rnd=None,
+        description=None,
+        stratified=False,
     ):
         """Returns a fewshot context string that is made up of a prepended description
         (if provided), the `num_fewshot` number of examples, and an appended prompt example.
@@ -608,6 +669,8 @@ class Task(abc.ABC):
             WARNING: This is currently a required arg although it's optionalized with a default `None`.
         :param description: str
             The task's description that will be prepended to the fewshot examples.
+        :param stratified: bool
+            When true, does stratified sampling, using the target from `self.doc_to_target` as the stratum.
         :returns: str
             The fewshot context.
         """
@@ -624,9 +687,15 @@ class Task(abc.ABC):
             print(
                 "WARNING: provide_description is deprecated and will be removed in a future version in favor of description_dict"
             )
+        if hasattr(self, "FEWSHOT_SEP"):
+            FEWSHOT_SEP = self.FEWSHOT_SEP
+        elif hasattr(self, "SEP"):
+            FEWSHOT_SEP = f"{self.SEP}{self.SEP}"
+        else:
+            FEWSHOT_SEP = "\n\n"
 
         if description:
-            description += "\n\n"
+            description += FEWSHOT_SEP
         elif hasattr(self, "DESCRIPTION"):
             description = self.DESCRIPTION
         else:
@@ -637,7 +706,9 @@ class Task(abc.ABC):
         else:
             # for sets with no training docs, draw from other set *but ensure no overlap with current doc*
             if self.has_training_docs():
-                fewshotex = self.fewshot_examples(k=num_fewshot, rnd=rnd)
+                fewshotex = self.fewshot_examples(
+                    k=num_fewshot, rnd=rnd, stratified=stratified
+                )
             else:
                 if self._fewshot_docs is None:
                     self._fewshot_docs = list(
@@ -646,24 +717,29 @@ class Task(abc.ABC):
                         else self.test_docs()
                     )
 
-                fewshotex = rnd.sample(self._fewshot_docs, num_fewshot + 1)
+                if stratified:
+                    fewshotex = self._stratified_fewshot_examples(
+                        self._fewshot_docs, num_fewshot + 1, rnd=rnd
+                    )
+                else:
+                    fewshotex = rnd.sample(self._fewshot_docs, num_fewshot + 1)
 
                 # get rid of the doc that's the one we're evaluating, if it's in the fewshot
                 fewshotex = [x for x in fewshotex if x != doc][:num_fewshot]
 
             labeled_examples = (
-                "\n\n".join(
+                FEWSHOT_SEP.join(
                     [
                         self.doc_to_text(doc) + self.doc_to_target(doc)
                         for doc in fewshotex
                     ]
                 )
-                + "\n\n"
+                + FEWSHOT_SEP
             )
 
         example = self.doc_to_text(doc)
         return description + labeled_examples + example
-    
+
     def set_tokenizer(self, tokenizer):
         self.tokenizer = tokenizer
 
@@ -689,6 +765,9 @@ class MultipleChoiceTask(Task):
         return {
             "acc": acc,
             "acc_norm": acc_norm,
+            "details": {
+                "scores": results,
+            },
         }
 
     def higher_is_better(self):
@@ -701,6 +780,61 @@ class MultipleChoiceTask(Task):
         return {
             "acc": mean,
             "acc_norm": mean,
+        }
+
+
+class BalancedMultipleChoiceTask(MultipleChoiceTask):
+    """A task where the choices are the same every time, and accuracy should be
+    calculated separately for each class.
+
+    Originally created for marc-ja, which is severely imbalanced, though also
+    useful with less weird datasets. Not suitable for datasets where the choices
+    change for every question.
+    """
+
+    def process_results(self, doc, results):
+        gold = doc["gold"]
+
+        # This isn't very clean, but it may be the best we can do since lm ops
+        # are submitted as an iterator for batching
+        response = None
+        if isinstance(results[-1], str):
+            response = results.pop()
+
+        pred = np.argmax(results)
+        acc = 1.0 if np.argmax(results) == gold else 0.0
+        completion_len = np.array([float(len(i)) for i in doc["choices"]])
+        acc_norm = 1.0 if np.argmax(results / completion_len) == gold else 0.0
+
+        return {
+            "acc": acc,
+            "acc_norm": acc_norm,
+            "balanced_acc": (acc, gold),
+            "mcc": (gold, pred),
+            "macro_f1": (gold, pred),
+            "details": {
+                "question": self.doc_to_text(doc),
+                "response": response,
+                "scores": results,
+            },
+        }
+
+    def higher_is_better(self):
+        return {
+            "acc": True,
+            "acc_norm": True,
+            "balanced_acc": True,
+            "mcc": True,
+            "macro_f1": True,
+        }
+
+    def aggregation(self):
+        return {
+            "acc": mean,
+            "acc_norm": mean,
+            "balanced_acc": balanced_mean,
+            "mcc": matthews_corrcoef,
+            "macro_f1": macro_f1,
         }
 
 
