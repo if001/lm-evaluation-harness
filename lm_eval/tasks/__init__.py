@@ -354,8 +354,10 @@ def register_tasks():
             key = f"{name}-{cls.VERSION}-{cls.PROMPT_VERSION}"
             TASK_REGISTRY[key] = cls
 
-
+_tmp = TASK_REGISTRY.copy()
 register_tasks()
+print('TASK_REGISTRY', _tmp - TASK_REGISTRY)
+
 
 ALL_TASKS = sorted(list(TASK_REGISTRY))
 
