@@ -127,10 +127,10 @@ if __name__ == "__main__":
     output_path = args.get("output_path", None)
     args.pop("output_path", None)
 
-    #results = main(args, description_dict_path, output_path)
+    results = main(args, description_dict_path, output_path)
 
     print(
         f"{args['model']} ({args['model_args']}), limit: {args['limit']}, "
         f"num_fewshot: {args['num_fewshot']}, batch_size: {args['batch_size']}"
     )
-    # print(evaluator.make_table(results))
+    print(evaluator.make_table(results))
