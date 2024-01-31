@@ -332,7 +332,6 @@ def register_tasks():
     """
     qq = []
     qq.extend(lm_eval.base.Task.__subclasses__())
-    print('lm_eval.base.Task.__subclasses__()', lm_eval.base.Task.__subclasses__())
     while qq:
         cls = qq.pop()
         # add subclasses to recur
