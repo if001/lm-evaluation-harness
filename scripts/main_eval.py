@@ -6,8 +6,10 @@ import fnmatch
 
 import sys
 from pathlib import Path
+print(sys.path)
 # support running without installing as a package
-wd = Path(__file__).parent.parent.resolve()
+wd = Path(__file__).parent.resolve()
+print(wd)
 sys.path.append(str(wd))
 
 from lm_eval import tasks
