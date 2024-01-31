@@ -320,12 +320,15 @@ class HuggingFaceAutoLM(BaseLM):
     ) -> transformers.PreTrainedTokenizer:
         """Returns a pre-trained tokenizer from a pre-trained tokenizer configuration."""
         print('tokenizer', tokenizer)
-        tokenizer = self.AUTO_TOKENIZER_CLASS.from_pretrained(
-            pretrained if tokenizer is None else tokenizer,
-            revision=revision + ("/" + subfolder if subfolder is not None else ""),
-            trust_remote_code=True,
-            use_fast=use_fast,
-        )
+        if tokenizer:
+            tokenizer = self.AUTO_TOKENIZER_CLASS.from_pretrained(tokenizer,trust_remote_code=True,use_fast=use_fast)
+        else:
+            tokenizer = self.AUTO_TOKENIZER_CLASS.from_pretrained(
+                pretrained if tokenizer is None else tokenizer,
+                revision=revision + ("/" + subfolder if subfolder is not None else ""),
+                trust_remote_code=True,
+                use_fast=use_fast,
+            )
         tokenizer.pad_token = tokenizer.eos_token
         return tokenizer
 
