@@ -171,11 +171,13 @@ class HuggingFaceAutoLM(BaseLM):
         self._batch_size = batch_size  # TODO: Adaptive batch size
         self._max_gen_toks = max_gen_toks
         self._max_length = max_length
-        self._config = self.AUTO_CONFIG_CLASS.from_pretrained(
-            pretrained,
-            trust_remote_code=trust_remote_code,
-            revision=revision + ("/" + subfolder if subfolder is not None else ""),
-        )
+
+        ## model configがロードできないモデルの場合だったのでコメントアウト
+        # self._config = self.AUTO_CONFIG_CLASS.from_pretrained(
+        #     pretrained,
+        #     trust_remote_code=trust_remote_code,
+        #     revision=revision + ("/" + subfolder if subfolder is not None else ""),
+        # )
         
         self._add_special_tokens = add_special_tokens
         self.tokenizer = self._create_auto_tokenizer(
@@ -202,7 +204,8 @@ class HuggingFaceAutoLM(BaseLM):
             trust_remote_code=trust_remote_code,
             revision=revision,
             subfolder=subfolder,
-            torch_dtype=_get_dtype(dtype, self._config),
+            # torch_dtype=_get_dtype(dtype, self._config),
+            torch_dtype=dtype,
             gptq_use_triton=gptq_use_triton,
             **model_kwargs,
         )
@@ -213,7 +216,8 @@ class HuggingFaceAutoLM(BaseLM):
                 peft=peft,
                 revision=revision,
                 subfolder=subfolder,
-                torch_dtype=_get_dtype(dtype, self._config),
+                # torch_dtype=_get_dtype(dtype, self._config),
+                torch_dtype=dtype,
                 **model_kwargs,
             )
         self.model.eval()
