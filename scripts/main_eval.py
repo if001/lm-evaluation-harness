@@ -4,7 +4,14 @@ import json
 import logging
 import fnmatch
 
-from lm_eval import tasks, evaluator
+import sys
+from pathlib import Path
+# support running without installing as a package
+wd = Path(__file__).parent.parent.resolve()
+sys.path.append(str(wd))
+
+from lm_eval import tasks
+from lm_eval import evaluator
 
 logging.getLogger("openai").setLevel(logging.WARNING)
 
