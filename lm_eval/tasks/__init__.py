@@ -332,6 +332,7 @@ def register_tasks():
     """
     qq = []
     qq.extend(lm_eval.base.Task.__subclasses__())
+    print('lm_eval.base.Task.__subclasses__()', lm_eval.base.Task.__subclasses__())
     while qq:
         cls = qq.pop()
         # add subclasses to recur
@@ -354,11 +355,7 @@ def register_tasks():
             key = f"{name}-{cls.VERSION}-{cls.PROMPT_VERSION}"
             TASK_REGISTRY[key] = cls
 
-_tmp = TASK_REGISTRY.copy()
 register_tasks()
-difference = set(_tmp.keys()) - set(TASK_REGISTRY.keys())
-print('TASK_REGISTRY',  difference)
-
 
 ALL_TASKS = sorted(list(TASK_REGISTRY))
 
