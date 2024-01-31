@@ -318,7 +318,7 @@ class HuggingFaceAutoLM(BaseLM):
         tokenizer = self.AUTO_TOKENIZER_CLASS.from_pretrained(
             pretrained if tokenizer is None else tokenizer,
             revision=revision + ("/" + subfolder if subfolder is not None else ""),
-            trust_remote_code=True
+            trust_remote_code=True,
             use_fast=use_fast,
         )
         tokenizer.pad_token = tokenizer.eos_token
