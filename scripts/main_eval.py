@@ -30,6 +30,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", required=True)
     parser.add_argument("--model_args", default="")
+    parser.add_argument("--tokenizer", required=True)
     parser.add_argument("--tasks", default=None, choices=MultiChoice(tasks.ALL_TASKS))
     parser.add_argument("--num_fewshot", type=str, default="0")
     parser.add_argument("--batch_size", type=int, default=None)
