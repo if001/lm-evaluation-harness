@@ -356,7 +356,8 @@ def register_tasks():
 
 _tmp = TASK_REGISTRY.copy()
 register_tasks()
-print('TASK_REGISTRY', _tmp - TASK_REGISTRY)
+difference = set(_tmp.keys()) - set(TASK_REGISTRY.keys())
+print('TASK_REGISTRY',  difference)
 
 
 ALL_TASKS = sorted(list(TASK_REGISTRY))
