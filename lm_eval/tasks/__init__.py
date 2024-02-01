@@ -2,7 +2,8 @@ from pprint import pprint
 from typing import List, Union
 import inspect
 
-import sacrebleu
+## sacrebleuのimportが死ぬのでコメントアウト
+# import sacrebleu
 import lm_eval.base
 
 from . import superglue
@@ -77,19 +78,19 @@ gpt3_translation_benchmarks = {
     "wmt16": ["en-ro", "ro-en", "de-en", "en-de"],  # German, Romanian
 }
 
-
-# 28 total
-selected_translation_benchmarks = {
-    **gpt3_translation_benchmarks,
-    "wmt20": sacrebleu.get_langpairs_for_testset("wmt20"),
-    "iwslt17": ["en-ar", "ar-en"],  # Arabic
-}
-
-# 319 total
-all_translation_benchmarks = {
-    ts: sacrebleu.get_langpairs_for_testset(ts)
-    for ts in sacrebleu.get_available_testsets()
-}
+## sacrebleuのimportが死ぬのでコメントアウト
+# # 28 total
+# selected_translation_benchmarks = {
+#     **gpt3_translation_benchmarks,
+#     "wmt20": sacrebleu.get_langpairs_for_testset("wmt20"),
+#     "iwslt17": ["en-ar", "ar-en"],  # Arabic
+# }
+## sacrebleuのimportが死ぬのでコメントアウト
+# # 319 total
+# all_translation_benchmarks = {
+#     ts: sacrebleu.get_langpairs_for_testset(ts)
+#     for ts in sacrebleu.get_available_testsets()
+# }
 
 # Ideally this would be removed and handled based entirely on module names,
 # but the name process is irregular, so it can only be transitioned gradually.
@@ -196,7 +197,7 @@ TASK_REGISTRY = {
     # e.g. wmt14-fr-en
     **translation.create_tasks_from_benchmarks(gpt3_translation_benchmarks),
     # chef's selection, mostly wmt20
-    **translation.create_tasks_from_benchmarks(selected_translation_benchmarks),
+    # **translation.create_tasks_from_benchmarks(selected_translation_benchmarks),
     # Word Scrambling and Manipulation Tasks
     "anagrams1": unscramble.Anagrams1,
     "anagrams2": unscramble.Anagrams2,
