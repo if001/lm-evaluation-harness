@@ -377,6 +377,10 @@ class HuggingFaceAutoLM(BaseLM):
         """
         if self._max_length is not None:
             return self._max_length
+        
+        if hasattr(self.model, "max_position_embeddings"):
+            return self.model.max_position_embeddings
+
         # Try to get the sequence length from the model config.
         seqlen_config_attrs = ("n_positions", "max_position_embeddings", "n_ctx")
         for attr in seqlen_config_attrs:
