@@ -818,6 +818,7 @@ class BalancedMultipleChoiceTask(MultipleChoiceTask):
                 "question": self.doc_to_text(doc),
                 "response": response,
                 "scores": results,
+                "gold": gold
             },
         }
 

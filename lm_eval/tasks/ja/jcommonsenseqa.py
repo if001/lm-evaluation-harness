@@ -98,16 +98,25 @@ class JCommonsenseQA(MultipleChoiceTask):
             "acc": acc,
             "acc_norm": acc_norm,
         }
-        # only include details if we were wrong
-        if acc == 0.0:
-            # without the cast it won't serialize
-            response = int(response)
-            out["details"] = {
-                "question": doc["goal"],
-                "choices": doc["choices"],
-                "gold": doc["gold"],
-                "response": response,
-            }
+        # # only include details if we were wrong
+        # if acc == 0.0:
+        #     # without the cast it won't serialize
+        #     response = int(response)
+        #     out["details"] = {
+        #         "question": doc["goal"],
+        #         "choices": doc["choices"],
+        #         "gold": doc["gold"],
+        #         "response": response,
+        #     }
+        
+        response = int(response)
+        out["details"] = {
+            "question": doc["goal"],
+            "choices": doc["choices"],
+            "gold": doc["gold"],
+            "response": response,
+            "correct": acc != 0.0
+        }
         return out
 
 
